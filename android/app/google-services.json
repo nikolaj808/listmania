@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "158840293551",
+    "project_id": "listmania-15c74",
+    "storage_bucket": "listmania-15c74.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158840293551:android:ff0ad6274416c2f3e9ec5a",
+        "android_client_info": {
+          "package_name": "io.nikolaj808.listmania"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158840293551-b08mmoujhcl1rqchrqqk5s5pju6rgbnn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.nikolaj808.listmania",
+            "certificate_hash": "5fa16f8ec489e84293775e9c57a9de72be623954"
+          }
+        },
+        {
+          "client_id": "158840293551-j9dfj3iggrjefrmk41fht3565cehtr1k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZOwVTl-u4lqeC-5PaCr9tPj1bzu2M8kQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158840293551-j9dfj3iggrjefrmk41fht3565cehtr1k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.listmania">
+    package="io.nikolaj808.listmania">
    <application
-        android:label="listmania"
+        android:label="Listmania"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

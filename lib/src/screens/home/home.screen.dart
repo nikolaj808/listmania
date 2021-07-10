@@ -19,11 +19,18 @@ class HomeScreen extends StatelessWidget {
         child: Icon(Icons.add_rounded),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomNavigationBar(items: [
-        BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home_rounded)),
-        BottomNavigationBarItem(
-            label: 'Lists', icon: Icon(Icons.shopping_cart_rounded)),
-      ]),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            label: 'Home',
+            icon: Icon(Icons.home_rounded),
+          ),
+          BottomNavigationBarItem(
+            label: 'Lists',
+            icon: Icon(Icons.shopping_cart_rounded),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: BlocBuilder<ItemsCubit, ItemsState>(
           builder: (context, state) {
