@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:listmania/src/constants.dart';
-import 'package:listmania/src/cubits/items/items_cubit.dart';
-import 'package:listmania/src/screens/create_item/create_item.screen.dart';
-import 'package:listmania/src/screens/home/views/items_list_empty.dart';
-import 'package:listmania/src/screens/home/views/items_list_error.dart';
-import 'package:listmania/src/screens/home/views/items_list_loaded.dart';
-import 'package:listmania/src/screens/home/views/items_list_loading.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class CreateItemScreen extends StatelessWidget {
+  const CreateItemScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +26,7 @@ class HomeScreen extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => CreateItemScreen(),
-                fullscreenDialog: true,
-              ));
+              Navigator.of(context).pop();
             },
             customBorder: CircleBorder(),
             child: Ink(
@@ -74,20 +64,8 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: BlocBuilder<ItemsCubit, ItemsState>(
-          builder: (context, state) {
-            if (state.status == ItemsStatus.loading) {
-              return ItemsListLoading();
-            } else if (state.status == ItemsStatus.empty) {
-              return ItemsListEmpty();
-            } else if (state.status == ItemsStatus.loadError) {
-              return ItemsListError();
-            }
-
-            final items = state.items;
-
-            return ItemsListLoaded(items: items);
-          },
+        child: Center(
+          child: Text('Hello, Create Item!'),
         ),
       ),
     );

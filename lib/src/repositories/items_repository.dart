@@ -1,12 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:listmania/src/models/create_item_input.model.dart';
 import 'package:listmania/src/models/item.model.dart';
 import 'package:listmania/src/models/update_item_input.model.dart';
 
 class ItemsRepository {
-  Future<List<Item>> getItems() async {
-    await Future.delayed(Duration(milliseconds: 1000));
+  final _itemsCollection = FirebaseFirestore.instance.collection('items');
 
-    throw Exception('Failed to load items');
+  Stream<List<Item>> getItemsStream() {
+    return _itemsCollection.snapshots().map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Item.fromSnapshot(doc)).toList(),
+        );
+  }
+
+  Future<List<Item>> getItems() async {
+    final itemsData = await _itemsCollection.get();
+
+    return itemsData.docs.map((doc) => Item.fromSnapshot(doc)).toList();
   }
 
   Future<Item> createItem(CreateItemInput item) async {

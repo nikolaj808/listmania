@@ -10,11 +10,26 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit({required this.authRepository}) : super(AuthInitial());
 
+  Future<void> initialize() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      emit(Unauthenticated());
+    } else {
+      emit(Authenticated(user: currentUser));
+    }
+  }
+
   Future<void> signInWithGoogle() async {
     try {
       final userCredential = await authRepository.signInWithGoogle();
+      final user = userCredential.user;
 
-      emit(Authenticated(userCredential: userCredential));
+      if (user == null) {
+        emit(Unauthenticated());
+      } else {
+        emit(Authenticated(user: user));
+      }
     } catch (e) {
       print(e);
     }

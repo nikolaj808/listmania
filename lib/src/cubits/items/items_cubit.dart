@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:listmania/src/models/create_item_input.model.dart';
@@ -9,16 +11,23 @@ part 'items_state.dart';
 
 class ItemsCubit extends Cubit<ItemsState> {
   final ItemsRepository itemsRepository;
+  StreamSubscription<List<Item>>? _itemsSubscription;
 
-  ItemsCubit(this.itemsRepository) : super(ItemsState());
+  ItemsCubit({required this.itemsRepository}) : super(ItemsState());
 
   Future<void> getItems() async {
     emit(state.copyWith(status: ItemsStatus.loading));
 
     try {
-      final items = await itemsRepository.getItems();
+      final initialItems = await itemsRepository.getItems();
 
-      emit(state.copyWith(items: items, status: ItemsStatus.loaded));
+      emit(state.copyWith(items: initialItems, status: ItemsStatus.loaded));
+
+      final itemsStream = itemsRepository.getItemsStream();
+
+      _itemsSubscription = itemsStream.listen(
+        (items) => emit(state.copyWith(items: items)),
+      );
     } catch (e) {
       emit(state.copyWith(status: ItemsStatus.loadError));
     }
