@@ -13,17 +13,19 @@ class ItemsCubit extends Cubit<ItemsState> {
   final ItemsRepository itemsRepository;
   StreamSubscription<List<Item>>? _itemsSubscription;
 
-  ItemsCubit({required this.itemsRepository}) : super(ItemsState());
+  ItemsCubit({
+    required this.itemsRepository,
+  }) : super(ItemsState());
 
   Future<void> getItems() async {
     emit(state.copyWith(status: ItemsStatus.loading));
 
     try {
-      final initialItems = await itemsRepository.getItems();
+      final initialItems = await itemsRepository.getAll();
 
       emit(state.copyWith(items: initialItems, status: ItemsStatus.loaded));
 
-      final itemsStream = itemsRepository.getItemsStream();
+      final itemsStream = itemsRepository.getStream();
 
       _itemsSubscription = itemsStream.listen(
         (items) => emit(state.copyWith(items: items)),
@@ -37,7 +39,7 @@ class ItemsCubit extends Cubit<ItemsState> {
     emit(state.copyWith(status: ItemsStatus.creating));
 
     try {
-      final createdItem = await itemsRepository.createItem(item);
+      final createdItem = await itemsRepository.create(item);
 
       final currentItems = state.items;
 
@@ -56,7 +58,7 @@ class ItemsCubit extends Cubit<ItemsState> {
     try {
       final itemToUpdateIndex = state.items.indexWhere((i) => i.id == item.id);
 
-      final updatedItem = await itemsRepository.updateItem(item);
+      final updatedItem = await itemsRepository.update(item);
 
       final currentItems = state.items;
 
@@ -84,5 +86,12 @@ class ItemsCubit extends Cubit<ItemsState> {
     } catch (_) {
       emit(state.copyWith(status: ItemsStatus.deleteError));
     }
+  }
+
+  @override
+  Future<void> close() async {
+    _itemsSubscription?.cancel();
+
+    super.close();
   }
 }

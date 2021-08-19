@@ -1,93 +1,112 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:listmania/src/constants.dart';
-import 'package:listmania/src/cubits/items/items_cubit.dart';
-import 'package:listmania/src/screens/create_item/create_item.screen.dart';
-import 'package:listmania/src/screens/home/views/items_list_empty.dart';
-import 'package:listmania/src/screens/home/views/items_list_error.dart';
-import 'package:listmania/src/screens/home/views/items_list_loaded.dart';
-import 'package:listmania/src/screens/home/views/items_list_loading.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:listmania/src/cubits/auth/auth_cubit.dart';
+import 'package:listmania/src/screens/create_shoppinglist/create_shoppinglist.screen.dart';
+import 'package:listmania/src/screens/login/login.screen.dart';
+import 'package:listmania/src/screens/profile/profile.screen.dart';
+import 'package:listmania/src/screens/shoppinglists/shoppinglists.screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final Duration _kPageAnimationDuration = const Duration(milliseconds: 300);
+
+  late PageController _pageController;
+
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _pageController = PageController();
+
+    _currentIndex = 0;
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
-      floatingActionButton: Hero(
-        tag: 'BottomBarFab',
-        flightShuttleBuilder: (flightContext, animation, flightDirection,
-            fromHeroContext, toHeroContext) {
-          return AnimatedBuilder(
-            animation: animation,
-            builder: (context, value) {
-              return Transform.rotate(
-                angle: animation.value * 1.75,
-                child: toHeroContext.widget,
-              );
-            },
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: _currentIndex == 0
+          ? OpenContainer(
+              closedElevation: 0,
+              closedColor: Colors.transparent,
+              closedBuilder: (context, action) => FloatingActionButton.extended(
+                onPressed: null,
+                elevation: 0,
+                label: Text('Create new list'),
+                icon: Icon(Icons.add_rounded),
+                backgroundColor: Theme.of(context).accentColor,
+              ),
+              openElevation: 0,
+              openBuilder: (context, action) => CreateShoppinglistScreen(),
+            )
+          : FloatingActionButton.extended(
+              onPressed: () {
+                context.read<AuthCubit>().signOut();
+
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (_) => LoginScreen(),
+                  ),
+                  (route) => false,
+                );
+              },
+              elevation: 0,
+              label: Text('Logout'),
+              icon: Icon(Icons.logout_rounded),
+              backgroundColor: Theme.of(context).accentColor,
+            ),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: (index) {
+          setState(() => _currentIndex = index);
+
+          _pageController.animateToPage(
+            index,
+            duration: _kPageAnimationDuration,
+            curve: Curves.ease,
           );
         },
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => CreateItemScreen(),
-                fullscreenDialog: true,
-              ));
-            },
-            customBorder: CircleBorder(),
-            child: Ink(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).primaryColor,
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.add,
-                  color: Theme.of(context).primaryIconTheme.color,
-                  size: 48 * .6,
-                ),
-              ),
-            ),
+        selectedIconTheme: IconThemeData(size: 26),
+        elevation: 0,
+        currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(FeatherIcons.list),
+            label: '',
+            tooltip: 'Lists',
           ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Hero(
-        tag: 'BottomBar',
-        child: BottomNavigationBar(
-          items: [
-            BottomNavigationBarItem(
-              label: 'Home',
-              icon: Icon(Icons.home_rounded),
-            ),
-            BottomNavigationBarItem(
-              label: 'Lists',
-              icon: Icon(Icons.shopping_cart_rounded),
-            ),
-          ],
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(FeatherIcons.user),
+            label: '',
+            tooltip: 'Profile',
+          ),
+        ],
       ),
       body: SafeArea(
-        child: BlocBuilder<ItemsCubit, ItemsState>(
-          builder: (context, state) {
-            if (state.status == ItemsStatus.loading) {
-              return ItemsListLoading();
-            } else if (state.status == ItemsStatus.empty) {
-              return ItemsListEmpty();
-            } else if (state.status == ItemsStatus.loadError) {
-              return ItemsListError();
-            }
-
-            final items = state.items;
-
-            return ItemsListLoaded(items: items);
-          },
+        child: PageView(
+          onPageChanged: (index) => setState(() => _currentIndex = index),
+          controller: _pageController,
+          children: [
+            ShoppinglistsScreen(),
+            ProfileScreen(),
+          ],
         ),
       ),
     );
